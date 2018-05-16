@@ -89,9 +89,9 @@ public:
 		QVBoxLayout *layout_vertical1 = new QVBoxLayout();
 		layout_vertical1->addWidget(button1);
 		layout_vertical1->addWidget(slider1);
+		layout_vertical1->addWidget(slider2);
 		layout_vertical1->addSpacing(100);
 		layout_vertical1->addWidget(button2);
-		layout_vertical1->addWidget(slider2);
 		layout_horizontal->addLayout(layout_vertical1);
 		QVBoxLayout *layout_vertical2 = new QVBoxLayout();
 		layout_vertical2->addSpacing(200);
@@ -121,7 +121,7 @@ public slots: // This tells Qt we are defining slots here
 void load_data()
 {
 	vtkSmartPointer<vtkMetaImageReader> reader = vtkSmartPointer<vtkMetaImageReader>::New();
-	QString fileName = QFileDialog::getOpenFileName(this, tr("Open Meta Image"),"C:/",tr("Images (*.mha)"));
+	QString fileName = QFileDialog::getOpenFileName(this, tr("Open Meta Image"),"C:/Users/F003584/engg199-03/",tr("Images (*.mha)"));
 	std::string filename = fileName.toUtf8().constData();
 	char *temp = new char[filename.size() + 1];
 	strcpy(temp, filename.c_str());
@@ -135,22 +135,24 @@ void load_data()
 	viewer2->Render();
 	slider1->setRange(viewer2->GetSliceMin(), viewer2->GetSliceMax());
 
-	/*vtkSmartPointer<vtkMetaImageReader> reader1 = vtkSmartPointer<vtkMetaImageReader>::New();
-	QString fileName1 = QFileDialog::getOpenFileName(this, tr("Open Meta Image"), "C:/", tr("Images (*.mha)"));
-	std::string filename1 = fileName.toUtf8().constData();
+	vtkSmartPointer<vtkMetaImageReader> reader1 = vtkSmartPointer<vtkMetaImageReader>::New();
+	QString fileName1 = QFileDialog::getOpenFileName(this, tr("Open Meta Image"), "C:/Users/F003584/engg199-03/", tr("Images (*.mha)"));
+	std::string filename1 = fileName1.toUtf8().constData();
 	char *temp1 = new char[filename1.size() + 1];
 	strcpy(temp1, filename1.c_str());
 	filename_final = temp1;
 	reader1->SetFileName(filename_final);
 	reader1->Update();
+	vtkSmartPointer<vtkImageData> im1 = reader1->GetOutput();
 	viewer4 = vtkSmartPointer<vtkImageViewer2>::New();
-	viewer4->SetInputConnection(reader->GetOutputPort());
+	viewer4->SetInputConnection(reader1->GetOutputPort());
 	viewer4->SetRenderWindow(viewport4->GetRenderWindow());
-	viewer4->Render();*/
+	viewer4->Render();
+	slider2->setRange(viewer4->GetSliceMin(), viewer4->GetSliceMax());
 }
 void seg()
 {
-	itk::ImageFileReader<itk::Image<unsigned char, 2>>::Pointer itkreader = itk::ImageFileReader<itk::Image<unsigned char, 2>>::New();
+	/*itk::ImageFileReader<itk::Image<unsigned char, 2>>::Pointer itkreader = itk::ImageFileReader<itk::Image<unsigned char, 2>>::New();
 	itkreader->SetFileName(filename_final);
 	itk::ScalarImageKmeansImageFilter<itk::Image<unsigned char, 2>>::Pointer kmeans = itk::ScalarImageKmeansImageFilter<itk::Image<unsigned char, 2>>::New();
 	kmeans->SetInput(itkreader->GetOutput());
@@ -172,7 +174,7 @@ void seg()
 	viewer2->GetWindowLevel()->SetLevel(1);
 	viewer2->GetWindowLevel()->SetWindow(2);
 	slider1->setRange(0,10);
-	viewer2->Render();
+	viewer2->Render();*/
 }
 void slider_changed1(int value)
 {
@@ -184,10 +186,10 @@ void slider_changed1(int value)
 }
 void slider_changed2(int value)
 {
-	if (viewer2 != NULL)
+	if (viewer4 != NULL)
 	{
-		viewer2->GetWindowLevel()->SetWindow(value);
-		viewer2->Render();
+		viewer4->SetSlice(value);
+		viewer4->Render();
 	}
 }
 };

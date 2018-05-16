@@ -1,4 +1,4 @@
-# Install script for directory: C:/engg199-03/project/src
+# Install script for directory: C:/Users/F003584/engg199-03/project/src
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -35,5 +35,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "C:/engg199-03/project/bin/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "C:/Users/F003584/engg199-03/project/bin/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

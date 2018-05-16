@@ -1,15 +1,15 @@
 ﻿  Generating moc source assignment_automoc.dir/moc_ui_AN63VKBUWCJMML.cpp
   Generating moc compilation assignment_automoc.cpp
   assignment_automoc.cpp
-c:\engg199-03\project\bin\assignment_automoc.dir\../../src/ui.h(127): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+c:\users\f003584\engg199-03\project\bin\assignment_automoc.dir\../../src/ui.h(127): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
   C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\string.h(119): note: see declaration of 'strcpy'
-c:\engg199-03\project\bin\assignment_automoc.dir\../../src/ui.h(142): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+c:\users\f003584\engg199-03\project\bin\assignment_automoc.dir\../../src/ui.h(142): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
   C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\string.h(119): note: see declaration of 'strcpy'
   main.cxx
-c:\engg199-03\project\src\ui.h(127): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+c:\users\f003584\engg199-03\project\src\ui.h(127): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
   C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\string.h(119): note: see declaration of 'strcpy'
-c:\engg199-03\project\src\ui.h(142): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+c:\users\f003584\engg199-03\project\src\ui.h(142): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
   C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\string.h(119): note: see declaration of 'strcpy'
   Generating Code...
-  assignment.vcxproj -> C:\engg199-03\project\bin\Debug\assignment.exe
-  assignment.vcxproj -> C:/engg199-03/project/bin/Debug/assignment.pdb (Full PDB)
+  assignment.vcxproj -> C:\Users\F003584\engg199-03\project\bin\Debug\assignment.exe
+  assignment.vcxproj -> C:/Users/F003584/engg199-03/project/bin/Debug/assignment.pdb (Full PDB)
