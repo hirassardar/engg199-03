@@ -1,5 +1,3 @@
-
-// Prevent this header file from being included multiple times
 #pragma once
 
 // VTK header files
@@ -34,13 +32,10 @@
 #include <QString.h>
 #include <QVTKWidget.h>
 
-
-// Class that represents the main window for our application
-class ui : public QMainWindow
+class ui : public QMainWindow 
 {
 	Q_OBJECT
 public:
-	// CLASS VARIABLES HERE
 	QWidget *widget;
 	QVTKWidget *viewport1;
 	QVTKWidget *viewport2;
@@ -56,12 +51,14 @@ public:
 	vtkSmartPointer<vtkImageViewer2> viewer5;
 	QSlider *slider1;
 	QSlider *slider2;
+	QSlider *slider3;
+	QSlider *slider4;
 	char *filename_final;
-	// Constructor (happens when created)
+	char *filename_final1;
 	ui()
 	{
 		// Resize the window
-		this->resize(1200,800); // CHANGE THIS
+		this->resize(1200,800);
 
 		// Create the "central" (primary) widget for the window
 		widget = new QWidget();
@@ -82,6 +79,8 @@ public:
 		button2 = new QPushButton("Segment");
 		slider1 = new QSlider(Qt::Horizontal, this);
 		slider2 = new QSlider(Qt::Horizontal, this);
+		slider3 = new QSlider(Qt::Horizontal, this);
+		slider4 = new QSlider(Qt::Horizontal, this);
 		
 		// Layout the widgets
 		QHBoxLayout *layout_horizontal = new QHBoxLayout();
@@ -92,6 +91,8 @@ public:
 		layout_vertical1->addWidget(slider2);
 		layout_vertical1->addSpacing(100);
 		layout_vertical1->addWidget(button2);
+		layout_vertical1->addWidget(slider3);
+		layout_vertical1->addWidget(slider4);
 		layout_horizontal->addLayout(layout_vertical1);
 		QVBoxLayout *layout_vertical2 = new QVBoxLayout();
 		layout_vertical2->addSpacing(200);
@@ -112,16 +113,18 @@ public:
 		connect(button2, SIGNAL(released()), this, SLOT(seg()));
 		connect(slider1, SIGNAL(valueChanged(int)), this, SLOT(slider_changed1(int)));
 		connect(slider2, SIGNAL(valueChanged(int)), this, SLOT(slider_changed2(int)));
+		connect(slider1, SIGNAL(valueChanged(int)), this, SLOT(slider_changed3(int)));
+		connect(slider2, SIGNAL(valueChanged(int)), this, SLOT(slider_changed4(int)));
 
 		// Display the window
 		this->show();
 	}
 
-public slots: // This tells Qt we are defining slots here
+public slots:
 void load_data()
 {
 	vtkSmartPointer<vtkMetaImageReader> reader = vtkSmartPointer<vtkMetaImageReader>::New();
-	QString fileName = QFileDialog::getOpenFileName(this, tr("Open Meta Image"),"C:/Users/F003584/engg199-03/",tr("Images (*.mha)"));
+	QString fileName = QFileDialog::getOpenFileName(this, tr("Open Meta Image"),"C:/Users/F003584/engg199-03/project/data/",tr("Images (*.mha)"));
 	std::string filename = fileName.toUtf8().constData();
 	char *temp = new char[filename.size() + 1];
 	strcpy(temp, filename.c_str());
@@ -136,12 +139,12 @@ void load_data()
 	slider1->setRange(viewer2->GetSliceMin(), viewer2->GetSliceMax());
 
 	vtkSmartPointer<vtkMetaImageReader> reader1 = vtkSmartPointer<vtkMetaImageReader>::New();
-	QString fileName1 = QFileDialog::getOpenFileName(this, tr("Open Meta Image"), "C:/Users/F003584/engg199-03/", tr("Images (*.mha)"));
+	QString fileName1 = QFileDialog::getOpenFileName(this, tr("Open Meta Image"), "C:/Users/F003584/engg199-03/project/data/", tr("Images (*.mha)"));
 	std::string filename1 = fileName1.toUtf8().constData();
 	char *temp1 = new char[filename1.size() + 1];
 	strcpy(temp1, filename1.c_str());
-	filename_final = temp1;
-	reader1->SetFileName(filename_final);
+	filename_final1 = temp1;
+	reader1->SetFileName(filename_final1);
 	reader1->Update();
 	vtkSmartPointer<vtkImageData> im1 = reader1->GetOutput();
 	viewer4 = vtkSmartPointer<vtkImageViewer2>::New();
@@ -152,7 +155,7 @@ void load_data()
 }
 void seg()
 {
-	/*itk::ImageFileReader<itk::Image<unsigned char, 2>>::Pointer itkreader = itk::ImageFileReader<itk::Image<unsigned char, 2>>::New();
+	itk::ImageFileReader<itk::Image<unsigned char, 2>>::Pointer itkreader = itk::ImageFileReader<itk::Image<unsigned char, 2>>::New();
 	itkreader->SetFileName(filename_final);
 	itk::ScalarImageKmeansImageFilter<itk::Image<unsigned char, 2>>::Pointer kmeans = itk::ScalarImageKmeansImageFilter<itk::Image<unsigned char, 2>>::New();
 	kmeans->SetInput(itkreader->GetOutput());
@@ -161,20 +164,45 @@ void seg()
 	kmeans->AddClassWithInitialMean(200);
 	kmeans->Update();
 	itk::ImageFileWriter<itk::Image<unsigned char, 2>>::Pointer writer = itk::ImageFileWriter<itk::Image<unsigned char, 2>>::New();
-	writer->SetFileName("C:/engg199-03/project/data/segmented image.png");
+	writer->SetFileName("C:/Users/F003584/engg199-03/project/data/segimage1.mha");
 	writer->SetInput(kmeans->GetOutput());
 	writer->Update();
 
-	vtkSmartPointer<vtkPNGReader> reader = vtkSmartPointer<vtkPNGReader>::New();
-	reader->SetFileName("C:/engg199-03/project/data/segmented image.png");
+	vtkSmartPointer<vtkMetaImageReader> reader = vtkSmartPointer<vtkMetaImageReader>::New();
+	reader->SetFileName("C:/Users/F003584/engg199-03/project/data/segimage1.mha");
 	reader->Update();
-	viewer2 = vtkSmartPointer<vtkImageViewer2>::New();
-	viewer2->SetInputConnection(reader->GetOutputPort());
-	viewer2->SetRenderWindow(viewport2->GetRenderWindow());
-	viewer2->GetWindowLevel()->SetLevel(1);
-	viewer2->GetWindowLevel()->SetWindow(2);
-	slider1->setRange(0,10);
-	viewer2->Render();*/
+	viewer3 = vtkSmartPointer<vtkImageViewer2>::New();
+	viewer3->SetInputConnection(reader->GetOutputPort());
+	viewer3->SetRenderWindow(viewport3->GetRenderWindow());
+	viewer3->GetWindowLevel()->SetLevel(1);
+	viewer3->GetWindowLevel()->SetWindow(2);
+	slider3->setRange(0,10);
+	viewer3->Render();
+
+
+	itk::ImageFileReader<itk::Image<unsigned char, 2>>::Pointer itkreader1 = itk::ImageFileReader<itk::Image<unsigned char, 2>>::New();
+	itkreader1->SetFileName(filename_final1);
+	itk::ScalarImageKmeansImageFilter<itk::Image<unsigned char, 2>>::Pointer kmeans1 = itk::ScalarImageKmeansImageFilter<itk::Image<unsigned char, 2>>::New();
+	kmeans1->SetInput(itkreader1->GetOutput());
+	kmeans1->AddClassWithInitialMean(5);
+	kmeans1->AddClassWithInitialMean(100);
+	kmeans1->AddClassWithInitialMean(200);
+	kmeans1->Update();
+	itk::ImageFileWriter<itk::Image<unsigned char, 2>>::Pointer writer1 = itk::ImageFileWriter<itk::Image<unsigned char, 2>>::New();
+	writer1->SetFileName("C:/Users/F003584/engg199-03/project/data/segimage2.mha");
+	writer1->SetInput(kmeans1->GetOutput());
+	writer1->Update();
+
+	vtkSmartPointer<vtkMetaImageReader> reader1 = vtkSmartPointer<vtkMetaImageReader>::New();
+	reader1->SetFileName("C:/Users/F003584/engg199-03/project/data/segimage2.mha");
+	reader1->Update();
+	viewer5 = vtkSmartPointer<vtkImageViewer2>::New();
+	viewer5->SetInputConnection(reader1->GetOutputPort());
+	viewer5->SetRenderWindow(viewport5->GetRenderWindow());
+	viewer5->GetWindowLevel()->SetLevel(1);
+	viewer5->GetWindowLevel()->SetWindow(2);
+	slider4->setRange(0, 10);
+	viewer5->Render();
 }
 void slider_changed1(int value)
 {
@@ -190,6 +218,22 @@ void slider_changed2(int value)
 	{
 		viewer4->SetSlice(value);
 		viewer4->Render();
+	}
+}
+void slider_changed3(int value)
+{
+	if (viewer3 != NULL)
+	{
+		viewer3->SetSlice(value);
+		viewer3->Render();
+	}
+}
+void slider_changed4(int value)
+{
+	if (viewer5 != NULL)
+	{
+		viewer5->SetSlice(value);
+		viewer5->Render();
 	}
 }
 };
