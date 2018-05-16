@@ -51,8 +51,6 @@ public:
 	vtkSmartPointer<vtkImageViewer2> viewer5;
 	QSlider *slider1;
 	QSlider *slider2;
-	QSlider *slider3;
-	QSlider *slider4;
 	char *filename_final;
 	char *filename_final1;
 	ui()
@@ -79,8 +77,6 @@ public:
 		button2 = new QPushButton("Segment");
 		slider1 = new QSlider(Qt::Horizontal, this);
 		slider2 = new QSlider(Qt::Horizontal, this);
-		slider3 = new QSlider(Qt::Horizontal, this);
-		slider4 = new QSlider(Qt::Horizontal, this);
 		
 		// Layout the widgets
 		QHBoxLayout *layout_horizontal = new QHBoxLayout();
@@ -91,8 +87,6 @@ public:
 		layout_vertical1->addWidget(slider2);
 		layout_vertical1->addSpacing(100);
 		layout_vertical1->addWidget(button2);
-		layout_vertical1->addWidget(slider3);
-		layout_vertical1->addWidget(slider4);
 		layout_horizontal->addLayout(layout_vertical1);
 		QVBoxLayout *layout_vertical2 = new QVBoxLayout();
 		layout_vertical2->addSpacing(200);
@@ -113,8 +107,6 @@ public:
 		connect(button2, SIGNAL(released()), this, SLOT(seg()));
 		connect(slider1, SIGNAL(valueChanged(int)), this, SLOT(slider_changed1(int)));
 		connect(slider2, SIGNAL(valueChanged(int)), this, SLOT(slider_changed2(int)));
-		connect(slider1, SIGNAL(valueChanged(int)), this, SLOT(slider_changed3(int)));
-		connect(slider2, SIGNAL(valueChanged(int)), this, SLOT(slider_changed4(int)));
 
 		// Display the window
 		this->show();
@@ -176,9 +168,7 @@ void seg()
 	viewer3->SetRenderWindow(viewport3->GetRenderWindow());
 	viewer3->GetWindowLevel()->SetLevel(1);
 	viewer3->GetWindowLevel()->SetWindow(2);
-	slider3->setRange(0,10);
 	viewer3->Render();
-
 
 	itk::ImageFileReader<itk::Image<unsigned char, 2>>::Pointer itkreader1 = itk::ImageFileReader<itk::Image<unsigned char, 2>>::New();
 	itkreader1->SetFileName(filename_final1);
@@ -201,7 +191,6 @@ void seg()
 	viewer5->SetRenderWindow(viewport5->GetRenderWindow());
 	viewer5->GetWindowLevel()->SetLevel(1);
 	viewer5->GetWindowLevel()->SetWindow(2);
-	slider4->setRange(0, 10);
 	viewer5->Render();
 }
 void slider_changed1(int value)
@@ -211,6 +200,11 @@ void slider_changed1(int value)
 		viewer2->SetSlice(value);
 		viewer2->Render();
 	}
+	if (viewer3 != NULL)
+	{
+		viewer3->SetSlice(value);
+		viewer3->Render();
+	}
 }
 void slider_changed2(int value)
 {
@@ -219,21 +213,11 @@ void slider_changed2(int value)
 		viewer4->SetSlice(value);
 		viewer4->Render();
 	}
-}
-void slider_changed3(int value)
-{
-	if (viewer3 != NULL)
-	{
-		viewer3->SetSlice(value);
-		viewer3->Render();
-	}
-}
-void slider_changed4(int value)
-{
 	if (viewer5 != NULL)
 	{
 		viewer5->SetSlice(value);
 		viewer5->Render();
 	}
 }
+
 };
