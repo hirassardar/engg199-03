@@ -12,8 +12,12 @@
 #include <vtkImageResample.h>
 #include <vtkVolume.h>
 #include <vtkVolumeProperty.h>
-#include <vtkFixedPointVolumeRayCastMapper.h>
+#include <vtkFixedPointVolumeRayCastMapper.h> 
 #include <vtkSmartVolumeMapper.h>
+#include <vtkRenderer.h>
+#include <vtkRenderWindow.h>
+#include <vtkPiecewiseFunction.h>
+#include <vtkColorTransferFunction.h>
 
 // ITK header files
 #include <itkImage.h>
@@ -44,7 +48,6 @@ public:
 	QVTKWidget *viewport5;
 	QPushButton *button1;
 	QPushButton *button2;
-	vtkSmartPointer<vtkImageViewer2> viewer1;
 	vtkSmartPointer<vtkImageViewer2> viewer2;
 	vtkSmartPointer<vtkImageViewer2> viewer3; 
 	vtkSmartPointer<vtkImageViewer2> viewer4;
@@ -129,8 +132,37 @@ void load_data()
 	viewer2->SetRenderWindow(viewport2->GetRenderWindow());
 	viewer2->Render();
 	slider1->setRange(viewer2->GetSliceMin(), viewer2->GetSliceMax());
+	vtkSmartPointer<vtkRenderer> ren1 = vtkSmartPointer<vtkRenderer>::New();
+	ren1->SetBackground(0, 0, 0);
+	viewport1->GetRenderWindow()->AddRenderer(ren1);
+	viewport1->GetRenderWindow()->Render();
+	vtkSmartPointer<vtkSmartVolumeMapper> volumeMapper = vtkSmartPointer<vtkSmartVolumeMapper>::New();
+	volumeMapper->SetBlendModeToComposite();
+	volumeMapper->SetInputConnection(reader->GetOutputPort());
+	vtkSmartPointer<vtkVolumeProperty> volumeProperty = vtkSmartPointer<vtkVolumeProperty>::New();
+	volumeProperty->ShadeOff();
+	volumeProperty->SetInterpolationType(VTK_LINEAR_INTERPOLATION);
+	vtkSmartPointer<vtkPiecewiseFunction> compositeOpacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
+	compositeOpacity->AddPoint(0.0, 0.0);
+	compositeOpacity->AddPoint(80.0, 1.0);
+	compositeOpacity->AddPoint(80.1, 0.0);
+	compositeOpacity->AddPoint(255.0, 0.0);
+	volumeProperty->SetScalarOpacity(compositeOpacity); // composite first.
+	vtkSmartPointer<vtkColorTransferFunction> color = vtkSmartPointer<vtkColorTransferFunction>::New();
+	color->AddRGBPoint(0.0, 0.0, 0.0, 1.0);
+	color->AddRGBPoint(40.0, 1.0, 0.0, 0.0);
+	color->AddRGBPoint(255.0, 1.0, 1.0, 1.0);
+	volumeProperty->SetColor(color);
+	vtkSmartPointer<vtkVolume> volume = vtkSmartPointer<vtkVolume>::New();
+	volume->SetMapper(volumeMapper);
+	volume->SetProperty(volumeProperty);
+	ren1->AddViewProp(volume);
+	ren1->ResetCamera();
+	viewport1->GetRenderWindow()->Render();
+	volumeMapper->SetRequestedRenderModeToRayCast(); // USE GPU MODE FOR FASTER RENDERING
+	viewport1->GetRenderWindow()->Render();
 
-	vtkSmartPointer<vtkMetaImageReader> reader1 = vtkSmartPointer<vtkMetaImageReader>::New();
+	/*vtkSmartPointer<vtkMetaImageReader> reader1 = vtkSmartPointer<vtkMetaImageReader>::New();
 	QString fileName1 = QFileDialog::getOpenFileName(this, tr("Open Meta Image"), "C:/Users/F003584/engg199-03/project/data/", tr("Images (*.mha)"));
 	std::string filename1 = fileName1.toUtf8().constData();
 	char *temp1 = new char[filename1.size() + 1];
@@ -143,7 +175,7 @@ void load_data()
 	viewer4->SetInputConnection(reader1->GetOutputPort());
 	viewer4->SetRenderWindow(viewport4->GetRenderWindow());
 	viewer4->Render();
-	slider2->setRange(viewer4->GetSliceMin(), viewer4->GetSliceMax());
+	slider2->setRange(viewer4->GetSliceMin(), viewer4->GetSliceMax());*/
 }
 void seg()
 {

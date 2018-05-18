@@ -1,9 +1,7 @@
 ﻿  Generating moc source assignment_automoc.dir/moc_ui_AN63VKBUWCJMML.cpp
   Generating moc compilation assignment_automoc.cpp
   assignment_automoc.cpp
-c:\users\f003584\engg199-03\project\bin\assignment_automoc.dir\../../src/ui.h(122): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-  C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\string.h(119): note: see declaration of 'strcpy'
-c:\users\f003584\engg199-03\project\bin\assignment_automoc.dir\../../src/ui.h(137): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+c:\users\f003584\engg199-03\project\bin\assignment_automoc.dir\../../src/ui.h(125): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
   C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\string.h(119): note: see declaration of 'strcpy'
 C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\xutility(2322): warning C4996: 'std::copy::_Unchecked_iterators::_Deprecate': Call to 'std::copy' with parameters that may be unsafe - this call relies on the caller to check that the passed values are correct. To disable this warning, use -D_SCL_SECURE_NO_WARNINGS. See documentation on how to use Visual C++ 'Checked Iterators'
   C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\xutility(2322): note: see declaration of 'std::copy::_Unchecked_iterators::_Deprecate'
@@ -14,11 +12,9 @@ C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\xutility(2322): w
               _InIt=const unsigned char *
           ]
   c:\libs\itk\src\modules\io\imagebase\include\itkImageFileReader.hxx(365): note: while compiling class template member function 'void itk::ImageFileReader<itk::Image<unsigned char,2>,itk::DefaultConvertPixelTraits<unsigned char>>::GenerateData(void)'
-  c:\users\f003584\engg199-03\project\bin\assignment_automoc.dir\../../src/ui.h(150): note: see reference to class template instantiation 'itk::ImageFileReader<itk::Image<unsigned char,2>,itk::DefaultConvertPixelTraits<unsigned char>>' being compiled
+  c:\users\f003584\engg199-03\project\bin\assignment_automoc.dir\../../src/ui.h(182): note: see reference to class template instantiation 'itk::ImageFileReader<itk::Image<unsigned char,2>,itk::DefaultConvertPixelTraits<unsigned char>>' being compiled
   main.cxx
-c:\users\f003584\engg199-03\project\src\ui.h(122): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-  C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\string.h(119): note: see declaration of 'strcpy'
-c:\users\f003584\engg199-03\project\src\ui.h(137): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+c:\users\f003584\engg199-03\project\src\ui.h(125): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
   C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\string.h(119): note: see declaration of 'strcpy'
 C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\xutility(2322): warning C4996: 'std::copy::_Unchecked_iterators::_Deprecate': Call to 'std::copy' with parameters that may be unsafe - this call relies on the caller to check that the passed values are correct. To disable this warning, use -D_SCL_SECURE_NO_WARNINGS. See documentation on how to use Visual C++ 'Checked Iterators'
   C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\xutility(2322): note: see declaration of 'std::copy::_Unchecked_iterators::_Deprecate'
@@ -29,7 +25,7 @@ C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\xutility(2322): w
               _InIt=const unsigned char *
           ]
   c:\libs\itk\src\modules\io\imagebase\include\itkImageFileReader.hxx(365): note: while compiling class template member function 'void itk::ImageFileReader<itk::Image<unsigned char,2>,itk::DefaultConvertPixelTraits<unsigned char>>::GenerateData(void)'
-  c:\users\f003584\engg199-03\project\src\ui.h(150): note: see reference to class template instantiation 'itk::ImageFileReader<itk::Image<unsigned char,2>,itk::DefaultConvertPixelTraits<unsigned char>>' being compiled
+  c:\users\f003584\engg199-03\project\src\ui.h(182): note: see reference to class template instantiation 'itk::ImageFileReader<itk::Image<unsigned char,2>,itk::DefaultConvertPixelTraits<unsigned char>>' being compiled
   Generating Code...
   assignment.vcxproj -> C:\Users\F003584\engg199-03\project\bin\Debug\assignment.exe
   assignment.vcxproj -> C:/Users/F003584/engg199-03/project/bin/Debug/assignment.pdb (Full PDB)
