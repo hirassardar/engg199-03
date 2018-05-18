@@ -54,12 +54,12 @@ public:
 	vtkSmartPointer<vtkImageViewer2> viewer5;
 	QSlider *slider1;
 	QSlider *slider2;
-	QLabel *label1;
+	/*QLabel *label1;
 	QLabel *label2;
 	QLabel *label3;
 	QLabel *label4;
 	QLabel *label5;
-	QLabel *label6;
+	QLabel *label6;*/
 	char *filename_final;
 	char *filename_final1;
 	ui()
@@ -86,21 +86,21 @@ public:
 		button2 = new QPushButton("Segment");
 		slider1 = new QSlider(Qt::Horizontal, this);
 		slider2 = new QSlider(Qt::Horizontal, this);
-		label1->setText("T1 Slice #");
+		/*label1->setText("T1 Slice #");
 		label2->setText("T2 Slice #");
 		label3->setText("T1");
 		label4->setText("T1 Segmented");
 		label5->setText("T2");
-		label6->setText("T2 Segmented");
+		label6->setText("T2 Segmented");*/
 		
 		// Layout the widgets
 		QHBoxLayout *layout_horizontal = new QHBoxLayout();
 		widget->setLayout(layout_horizontal);
 		QVBoxLayout *layout_vertical1 = new QVBoxLayout();
 		layout_vertical1->addWidget(button1);
-		layout_vertical1->addWidget(label1);
+		//layout_vertical1->addWidget(label1);
 		layout_vertical1->addWidget(slider1);
-		layout_vertical1->addWidget(label2);
+		//layout_vertical1->addWidget(label2);
 		layout_vertical1->addWidget(slider2);
 		layout_vertical1->addSpacing(100);
 		layout_vertical1->addWidget(button2);
@@ -111,15 +111,15 @@ public:
 		layout_vertical2->addSpacing(200);
 		layout_horizontal->addLayout(layout_vertical2);
 		QVBoxLayout *layout_vertical3 = new QVBoxLayout();
-		layout_vertical1->addWidget(label3);
+		//layout_vertical1->addWidget(label3);
 		layout_vertical3->addWidget(viewport2);
-		layout_vertical1->addWidget(label4);
+		//layout_vertical1->addWidget(label4);
 		layout_vertical3->addWidget(viewport3);
 		layout_horizontal->addLayout(layout_vertical3);
 		QVBoxLayout *layout_vertical4 = new QVBoxLayout();
-		layout_vertical1->addWidget(label5);
+		//layout_vertical1->addWidget(label5);
 		layout_vertical4->addWidget(viewport4);
-		layout_vertical1->addWidget(label6);
+		//layout_vertical1->addWidget(label6);
 		layout_vertical4->addWidget(viewport5);
 		layout_horizontal->addLayout(layout_vertical4);
 
