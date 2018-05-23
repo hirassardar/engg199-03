@@ -142,8 +142,8 @@ public:
 		seg1->setText("Confidence Connected Segmentation Parameters");
 		comboBox = new QComboBox();
 		comboBox->addItem(tr("Multiplier = 1"));
-    	comboBox->addItem(tr("Multiplier = 2"));
-    	comboBox->addItem(tr("Multiplier = 3"));
+		comboBox->addItem(tr("Multiplier = 2"));
+		comboBox->addItem(tr("Multiplier = 3"));
 		comboBox1 = new QComboBox();
 		comboBox1->addItem(tr("Iterations = 1"));
 		comboBox1->addItem(tr("Iterations = 10"));
@@ -217,14 +217,26 @@ public:
 	{
 		// Opening T1 image 
 		vtkSmartPointer<vtkMetaImageReader> reader = vtkSmartPointer<vtkMetaImageReader>::New();
-		QString fileName = QFileDialog::getOpenFileName(this, tr("Please select T1 Meta Image"), 
-			"C:/engg199-03/project/data/", tr("Images (*.mha)"));
+		QString fileName = QFileDialog::getOpenFileName(this, tr("Please select T1 Meta Image"),
+			"C:/engg199-03/data/", tr("Images (*.mha)"));
 		std::string filename = fileName.toUtf8().constData();
 		char *temp = new char[filename.size() + 1];
 		strcpy(temp, filename.c_str());
 		filename_final = temp;
 		reader->SetFileName(filename_final);
 		reader->Update();
+
+		// Opening T2 image 
+		vtkSmartPointer<vtkMetaImageReader> reader1 = vtkSmartPointer<vtkMetaImageReader>::New();
+		QString fileName1 = QFileDialog::getOpenFileName(this, tr("Please select T2 Meta Image"),
+			"C:/engg199-03/data/", tr("Images (*.mha)"));
+		std::string filename1 = fileName1.toUtf8().constData();
+		char *temp1 = new char[filename.size() + 1];
+		strcpy(temp1, filename1.c_str());
+		filename_final1 = temp1;
+		reader1->SetFileName(filename_final1);
+		reader1->Update();
+
 		// Displaying T1 image
 		vtkSmartPointer<vtkImageData> im = reader->GetOutput();
 		viewer2 = vtkSmartPointer<vtkImageViewer2>::New();
@@ -265,17 +277,58 @@ public:
 		volumeMapper->SetRequestedRenderModeToRayCast();
 		viewport1->GetRenderWindow()->Render();
 
+		// Displaying T2 images
+		vtkSmartPointer<vtkImageData> im1 = reader1->GetOutput();
+		viewer6 = vtkSmartPointer<vtkImageViewer2>::New();
+		viewer6->SetInputConnection(reader1->GetOutputPort());
+		viewer6->SetRenderWindow(viewport6->GetRenderWindow());
+		viewer6->Render();
+		// Change slice #  
+		slider2->setRange(viewer6->GetSliceMin(), viewer6->GetSliceMax());
+		// Volume rendering of T2 image
+		vtkSmartPointer<vtkRenderer> ren2 = vtkSmartPointer<vtkRenderer>::New();
+		ren2->SetBackground(0, 0, 0);
+		viewport5->GetRenderWindow()->AddRenderer(ren2);
+		viewport5->GetRenderWindow()->Render();
+		vtkSmartPointer<vtkSmartVolumeMapper> volumeMapper1 = vtkSmartPointer<vtkSmartVolumeMapper>::New();
+		volumeMapper1->SetBlendModeToComposite();
+		volumeMapper1->SetInputConnection(reader1->GetOutputPort());
+		vtkSmartPointer<vtkVolumeProperty> volumeProperty1 = vtkSmartPointer<vtkVolumeProperty>::New();
+		volumeProperty1->ShadeOff();
+		volumeProperty1->SetInterpolationType(VTK_LINEAR_INTERPOLATION);
+		vtkSmartPointer<vtkPiecewiseFunction> compositeOpacity1 = vtkSmartPointer<vtkPiecewiseFunction>::New();
+		compositeOpacity1->AddPoint(0.0, 0.0);
+		compositeOpacity1->AddPoint(200.0, 0.02);
+		compositeOpacity1->AddPoint(201.0, 0.06);
+		compositeOpacity1->AddPoint(900.0, 0.12);
+		volumeProperty1->SetScalarOpacity(compositeOpacity1); // composite first
+		vtkSmartPointer<vtkColorTransferFunction> color1 = vtkSmartPointer<vtkColorTransferFunction>::New();
+		color1->AddRGBPoint(0.0, 0.0, 0.0, 1.0);
+		color1->AddRGBPoint(150.0, 0.2, 0.7, 1.0);
+		color1->AddRGBPoint(300.0, 1.0, 1.0, 1.0);
+		color1->AddRGBPoint(900.0, 1.0, 1.0, 1.0);
+		volumeProperty1->SetColor(color1);
+		vtkSmartPointer<vtkVolume> volume1 = vtkSmartPointer<vtkVolume>::New();
+		volume1->SetMapper(volumeMapper1);
+		volume1->SetProperty(volumeProperty1);
+		ren2->AddViewProp(volume1);
+		ren2->ResetCamera();
+		viewport5->GetRenderWindow()->Render();
+		volumeMapper1->SetRequestedRenderModeToRayCast();
+		viewport5->GetRenderWindow()->Render();
+
 	}
 	void seg()
 	{
+		// for T1
 		//Save current image slice
 		vtkSmartPointer<vtkPNGWriter> pngwriter = vtkSmartPointer<vtkPNGWriter>::New();
-		pngwriter->SetFileName("C:/engg199-03/project/data/slice_to_segment.png");
+		pngwriter->SetFileName("C:/engg199-03/data/slice_to_segment.png");
 		pngwriter->SetInputData(viewer2->GetImageActor()->GetInput());
 		pngwriter->Write();
 		//kmeans segmentation
 		itk::ImageFileReader<itk::Image<unsigned char, 2>>::Pointer itkreader = itk::ImageFileReader<itk::Image<unsigned char, 2>>::New();
-		itkreader->SetFileName("C:/engg199-03/project/data/slice_to_segment.png");
+		itkreader->SetFileName("C:/engg199-03/data/slice_to_segment.png");
 		itk::ScalarImageKmeansImageFilter<itk::Image<unsigned char, 2>>::Pointer kmeans = itk::ScalarImageKmeansImageFilter<itk::Image<unsigned char, 2>>::New();
 		kmeans->SetInput(itkreader->GetOutput());
 		kmeans->AddClassWithInitialMean(5);
@@ -283,12 +336,12 @@ public:
 		kmeans->AddClassWithInitialMean(250);
 		kmeans->Update();
 		itk::ImageFileWriter<itk::Image<unsigned char, 2>>::Pointer writer = itk::ImageFileWriter<itk::Image<unsigned char, 2>>::New();
-		writer->SetFileName("C:/engg199-03/project/data/segimage1-kmeans.png");
+		writer->SetFileName("C:/engg199-03/data/segimage1-kmeans.png");
 		writer->SetInput(kmeans->GetOutput());
 		writer->Update();
 		//view kmeans segmented image
 		vtkSmartPointer<vtkPNGReader> reader = vtkSmartPointer<vtkPNGReader>::New();
-		reader->SetFileName("C:/engg199-03/project/data/segimage1-kmeans.png");
+		reader->SetFileName("C:/engg199-0/data/segimage1-kmeans.png");
 		reader->Update();
 		viewer3 = vtkSmartPointer<vtkImageViewer2>::New();
 		viewer3->SetInputConnection(reader->GetOutputPort());
@@ -300,7 +353,7 @@ public:
 		m = 1;
 		i = 1;
 		itk::ImageFileReader<itk::Image< unsigned char, 2 >>::Pointer itkreader1 = itk::ImageFileReader<itk::Image< unsigned char, 2 >>::New();
-		itkreader1->SetFileName("C:/engg199-03/project/data/slice_to_segment.png");
+		itkreader1->SetFileName("C:/engg199-03/data/slice_to_segment.png");
 		itkreader1->Update();
 		itk::ConfidenceConnectedImageFilter<itk::Image<unsigned char, 2>, itk::Image<unsigned char, 2>>::Pointer confidenceConnectedFilter = itk::ConfidenceConnectedImageFilter<itk::Image<unsigned char, 2>, itk::Image<unsigned char, 2>>::New();
 		confidenceConnectedFilter->SetInitialNeighborhoodRadius(10);
@@ -313,12 +366,12 @@ public:
 		confidenceConnectedFilter->SetSeed(seed);
 		confidenceConnectedFilter->SetInput(itkreader1->GetOutput());
 		itk::ImageFileWriter<itk::Image<unsigned char, 2>>::Pointer writer1 = itk::ImageFileWriter<itk::Image<unsigned char, 2>>::New();
-		writer1->SetFileName("C:/engg199-03/project/data/segimage1-cc.png");
+		writer1->SetFileName("C:/engg199-03/data/segimage1-cc.png");
 		writer1->SetInput(confidenceConnectedFilter->GetOutput());
 		writer1->Update();
 		// view confidence connected segmentation
 		vtkSmartPointer<vtkPNGReader> reader1 = vtkSmartPointer<vtkPNGReader>::New();
-		reader1->SetFileName("C:/engg199-03/project/data/segimage1-cc.png");
+		reader1->SetFileName("C:/engg199-03/data/segimage1-cc.png");
 		reader1->Update();
 		viewer4 = vtkSmartPointer<vtkImageViewer2>::New();
 		viewer4->SetInputConnection(reader1->GetOutputPort());
@@ -326,6 +379,67 @@ public:
 		viewer4->GetWindowLevel()->SetLevel(1);
 		viewer4->GetWindowLevel()->SetWindow(2);
 		viewer4->Render();
+
+
+		// for T2
+		//Save current image slice
+		vtkSmartPointer<vtkPNGWriter> pngwriter1 = vtkSmartPointer<vtkPNGWriter>::New();
+		pngwriter1->SetFileName("C:/engg199-03/data/slice_to_segment2.png");
+		pngwriter1->SetInputData(viewer6->GetImageActor()->GetInput());
+		pngwriter1->Write();
+		//kmeans segmentation
+		itk::ImageFileReader<itk::Image<unsigned char, 2>>::Pointer itkreadert2 = itk::ImageFileReader<itk::Image<unsigned char, 2>>::New();
+		itkreadert2->SetFileName("C:/engg199-03/data/slice_to_segment2.png");
+		itk::ScalarImageKmeansImageFilter<itk::Image<unsigned char, 2>>::Pointer kmeans1 = itk::ScalarImageKmeansImageFilter<itk::Image<unsigned char, 2>>::New();
+		kmeans1->SetInput(itkreadert2->GetOutput());
+		kmeans1->AddClassWithInitialMean(5);
+		kmeans1->AddClassWithInitialMean(150);
+		kmeans1->AddClassWithInitialMean(250);
+		kmeans1->Update();
+		itk::ImageFileWriter<itk::Image<unsigned char, 2>>::Pointer writert2 = itk::ImageFileWriter<itk::Image<unsigned char, 2>>::New();
+		writert2->SetFileName("C:/engg199-03/data/segimage1-kmeans2.png");
+		writert2->SetInput(kmeans1->GetOutput());
+		writert2->Update();
+		//view kmeans segmented image
+		vtkSmartPointer<vtkPNGReader> readert2 = vtkSmartPointer<vtkPNGReader>::New();
+		readert2->SetFileName("C:/engg199-03/data/segimage1-kmeans2.png");
+		readert2->Update();
+		viewer7 = vtkSmartPointer<vtkImageViewer2>::New();
+		viewer7->SetInputConnection(readert2->GetOutputPort());
+		viewer7->SetRenderWindow(viewport7->GetRenderWindow());
+		viewer7->GetWindowLevel()->SetLevel(1);
+		viewer7->GetWindowLevel()->SetWindow(2);
+		viewer7->Render();
+		// confidence connected segmentation
+		m = 1;
+		i = 1;
+		itk::ImageFileReader<itk::Image< unsigned char, 2 >>::Pointer itkreader1t2 = itk::ImageFileReader<itk::Image< unsigned char, 2 >>::New();
+		itkreader1t2->SetFileName("C:/engg199-03/data/slice_to_segment2.png");
+		itkreader1t2->Update();
+		itk::ConfidenceConnectedImageFilter<itk::Image<unsigned char, 2>, itk::Image<unsigned char, 2>>::Pointer confidenceConnectedFilter1 = itk::ConfidenceConnectedImageFilter<itk::Image<unsigned char, 2>, itk::Image<unsigned char, 2>>::New();
+		confidenceConnectedFilter1->SetInitialNeighborhoodRadius(10);
+		confidenceConnectedFilter1->SetMultiplier(m);
+		confidenceConnectedFilter1->SetNumberOfIterations(i);
+		confidenceConnectedFilter1->SetReplaceValue(255);
+		itk::Image< unsigned char, 2 >::IndexType seed1;
+		seed1[0] = 300;
+		seed1[1] = 150;
+		confidenceConnectedFilter1->SetSeed(seed1);
+		confidenceConnectedFilter1->SetInput(itkreader1t2->GetOutput());
+		itk::ImageFileWriter<itk::Image<unsigned char, 2>>::Pointer writer1t2 = itk::ImageFileWriter<itk::Image<unsigned char, 2>>::New();
+		writer1t2->SetFileName("C:/engg199-03/data/segimage1-cc2.png");
+		writer1t2->SetInput(confidenceConnectedFilter1->GetOutput());
+		writer1t2->Update();
+		// view confidence connected segmentation
+		vtkSmartPointer<vtkPNGReader> reader1t2 = vtkSmartPointer<vtkPNGReader>::New();
+		reader1t2->SetFileName("C:/engg199-03/data/segimage1-cc2.png");
+		reader1t2->Update();
+		viewer8 = vtkSmartPointer<vtkImageViewer2>::New();
+		viewer8->SetInputConnection(reader1t2->GetOutputPort());
+		viewer8->SetRenderWindow(viewport8->GetRenderWindow());
+		viewer8->GetWindowLevel()->SetLevel(1);
+		viewer8->GetWindowLevel()->SetWindow(2);
+		viewer8->Render();
 
 	}
 	void slider_changed1(int value)
