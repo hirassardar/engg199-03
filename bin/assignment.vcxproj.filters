@@ -1,27 +1,27 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="C:\Users\F003584\engg199-03\project\src\main.cxx">
+    <ClCompile Include="C:\engg199-03\src\main.cxx">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\F003584\engg199-03\project\bin\assignment_automoc.cpp">
+    <ClCompile Include="C:\engg199-03\bin\assignment_automoc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="C:\Users\F003584\engg199-03\project\src\ui.h">
+    <ClInclude Include="C:\engg199-03\src\ui.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="C:\Users\F003584\engg199-03\project\src\CMakeLists.txt" />
+    <CustomBuild Include="C:\engg199-03\src\CMakeLists.txt" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>{2751BFE2-F5FB-3181-8462-4480670134E9}</UniqueIdentifier>
+      <UniqueIdentifier>{E99261B3-67A2-3F6C-83B8-CDBC82655BF6}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>{FC43DD7A-BD78-3E09-8BB8-8F51DCD30F9A}</UniqueIdentifier>
+      <UniqueIdentifier>{3C8FD2C9-4D35-327B-988D-12044487B40F}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
