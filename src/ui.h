@@ -19,6 +19,8 @@
 #include <vtkPiecewiseFunction.h>
 #include <vtkColorTransferFunction.h>
 #include <vtkExtractVOI.h>
+#include <vtkImageActor.h>
+#include <vtkPNGWriter.h>
 
 // ITK header files
 #include <itkImage.h>
@@ -195,7 +197,8 @@ public:
 	{
 		// Opening T1 image 
 		vtkSmartPointer<vtkMetaImageReader> reader = vtkSmartPointer<vtkMetaImageReader>::New();
-		QString fileName = QFileDialog::getOpenFileName(this, tr("Please select T1 Meta Image"), "C:/engg199-03/data/", tr("Images (*.mha)"));
+		QString fileName = QFileDialog::getOpenFileName(this, tr("Please select T1 Meta Image"), 
+			"C:/engg199-03/data/", tr("Images (*.mha)"));
 		std::string filename = fileName.toUtf8().constData();
 		char *temp = new char[filename.size() + 1];
 		strcpy(temp, filename.c_str());
@@ -223,14 +226,15 @@ public:
 		volumeProperty->SetInterpolationType(VTK_LINEAR_INTERPOLATION);
 		vtkSmartPointer<vtkPiecewiseFunction> compositeOpacity = vtkSmartPointer<vtkPiecewiseFunction>::New();
 		compositeOpacity->AddPoint(0.0, 0.0);
-		compositeOpacity->AddPoint(50.0, 1.0);
-		compositeOpacity->AddPoint(50.1, 0.0);
-		compositeOpacity->AddPoint(255.0, 0);
+		compositeOpacity->AddPoint(200.0, 0.02);
+		compositeOpacity->AddPoint(201.0, 0.06);
+		compositeOpacity->AddPoint(900.0, 0.12);
 		volumeProperty->SetScalarOpacity(compositeOpacity); // composite first
 		vtkSmartPointer<vtkColorTransferFunction> color = vtkSmartPointer<vtkColorTransferFunction>::New();
-		color->AddRGBPoint(0.0, 0.0, 0.0, 0.0);
-		color->AddRGBPoint(150.0, 0.4, 0.4, 0.4);
-		color->AddRGBPoint(255.0, 1.0, 1.0, 1.0);
+		color->AddRGBPoint(0.0, 0.0, 0.0, 1.0);
+		color->AddRGBPoint(150.0, 0.2, 0.7, 1.0);
+		color->AddRGBPoint(300.0, 1.0, 1.0, 1.0);
+		color->AddRGBPoint(900.0, 1.0, 1.0, 1.0);
 		volumeProperty->SetColor(color);
 		vtkSmartPointer<vtkVolume> volume = vtkSmartPointer<vtkVolume>::New();
 		volume->SetMapper(volumeMapper);
@@ -253,22 +257,28 @@ public:
 		viewport1->GetRenderWindow()->Render();*/
 	}
 	void seg()
-	{	
+	{
+		// save current image slice
+		vtkSmartPointer<vtkPNGWriter> pngwriter = vtkSmartPointer<vtkPNGWriter>::New();
+		pngwriter->SetFileName("C:/engg199-03/data/slice_to_segment.png");
+		pngwriter->SetInputData(viewer2->GetImageActor()->GetInput());
+		pngwriter->Write();
+
 		itk::ImageFileReader<itk::Image<unsigned char, 2>>::Pointer itkreader = itk::ImageFileReader<itk::Image<unsigned char, 2>>::New();
-		itkreader->SetFileName(filename_final);
+		itkreader->SetFileName("C:/engg199-03/data/slice_to_segment.png");
 		itk::ScalarImageKmeansImageFilter<itk::Image<unsigned char, 2>>::Pointer kmeans = itk::ScalarImageKmeansImageFilter<itk::Image<unsigned char, 2>>::New();
 		kmeans->SetInput(itkreader->GetOutput());
 		kmeans->AddClassWithInitialMean(5);
-		kmeans->AddClassWithInitialMean(100);
-		kmeans->AddClassWithInitialMean(200);
+		kmeans->AddClassWithInitialMean(150);
+		kmeans->AddClassWithInitialMean(250);
 		kmeans->Update();
 		itk::ImageFileWriter<itk::Image<unsigned char, 2>>::Pointer writer = itk::ImageFileWriter<itk::Image<unsigned char, 2>>::New();
-		writer->SetFileName("C:/engg199-03/data/segimage1-kmeans.mha");
+		writer->SetFileName("C:/engg199-03/data/segimage1-kmeans.png");
 		writer->SetInput(kmeans->GetOutput());
 		writer->Update();
 
-		vtkSmartPointer<vtkMetaImageReader> reader = vtkSmartPointer<vtkMetaImageReader>::New();
-		reader->SetFileName("C:/engg199-03/data/segimage1-kmeans.mha");
+		vtkSmartPointer<vtkPNGReader> reader = vtkSmartPointer<vtkPNGReader>::New();
+		reader->SetFileName("C:/engg199-03/data/segimage1-kmeans.png");
 		reader->Update();
 		viewer3 = vtkSmartPointer<vtkImageViewer2>::New();
 		viewer3->SetInputConnection(reader->GetOutputPort());
@@ -279,26 +289,26 @@ public:
 		//slider1->setRange(viewer3->GetSliceMin(), viewer3->GetSliceMax());
 
 		itk::ImageFileReader<itk::Image< unsigned char, 2 >>::Pointer itkreader1 = itk::ImageFileReader<itk::Image< unsigned char, 2 >>::New();
-		itkreader1->SetFileName(filename_final);
+		itkreader1->SetFileName("C:/engg199-03/data/slice_to_segment.png");
 		itkreader1->Update();
 		itk::ConfidenceConnectedImageFilter<itk::Image<unsigned char, 2>, itk::Image<unsigned char, 2>>::Pointer confidenceConnectedFilter = itk::ConfidenceConnectedImageFilter<itk::Image<unsigned char, 2>, itk::Image<unsigned char, 2>>::New();
 		confidenceConnectedFilter->SetInitialNeighborhoodRadius(10);
-		confidenceConnectedFilter->SetMultiplier(2.5);
-		confidenceConnectedFilter->SetNumberOfIterations(25);
+		confidenceConnectedFilter->SetMultiplier(1.8);
+		confidenceConnectedFilter->SetNumberOfIterations(32);
 		confidenceConnectedFilter->SetReplaceValue(255);
 		itk::Image< unsigned char, 2 >::IndexType seed;
-		seed[0] = 200;
-		seed[1] = 200;
+		seed[0] = 300;
+		seed[1] = 150;
 		confidenceConnectedFilter->SetSeed(seed);
 		confidenceConnectedFilter->SetInput(itkreader1->GetOutput());
 
 		itk::ImageFileWriter<itk::Image<unsigned char, 2>>::Pointer writer1 = itk::ImageFileWriter<itk::Image<unsigned char, 2>>::New();
-		writer1->SetFileName("C:/engg199-03/data/segimage1-cc.mha");
+		writer1->SetFileName("C:/engg199-03/data/segimage1-cc.png");
 		writer1->SetInput(confidenceConnectedFilter->GetOutput());
 		writer1->Update();
 
-		vtkSmartPointer<vtkMetaImageReader> reader1 = vtkSmartPointer<vtkMetaImageReader>::New();
-		reader1->SetFileName("C:/engg199-03/data/segimage1-cc.mha");
+		vtkSmartPointer<vtkPNGReader> reader1 = vtkSmartPointer<vtkPNGReader>::New();
+		reader1->SetFileName("C:/engg199-03/data/segimage1-cc.png");
 		reader1->Update();
 		viewer4 = vtkSmartPointer<vtkImageViewer2>::New();
 		viewer4->SetInputConnection(reader1->GetOutputPort());
