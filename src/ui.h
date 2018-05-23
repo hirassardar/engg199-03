@@ -73,6 +73,8 @@ public:
 	QLabel *label8;
 	QLabel *label9;
 	QLabel *label10;
+	QLabel *labeln1;
+	QLabel *labeln2;
 	char *filename_final;
 	char *filename_final1;
 	ui()
@@ -115,6 +117,8 @@ public:
 		label8 = new QLabel();
 		label9 = new QLabel();
 		label10 = new QLabel();
+		labeln1 = new QLabel();
+		labeln2 = new QLabel();
 		label1->setText("T1 Slice #");
 		label2->setText("T2 Slice #");
 		label3->setText("T1");
@@ -125,19 +129,32 @@ public:
 		label8->setText("T2 Volume Rendered");
 		label9->setText("T1 Segmented - Confidence connected");
 		label10->setText("T2 Segmented - Confidence connected");
+		labeln1->setText(" ");
+		labeln2->setText(" ");
 
 		// Layout the widgets
 		QHBoxLayout *layout_horizontal = new QHBoxLayout();
 		widget->setLayout(layout_horizontal);
+
 		QVBoxLayout *layout_vertical1 = new QVBoxLayout();
 		layout_vertical1->addWidget(button1);
-		layout_vertical1->addWidget(label1);
+		QHBoxLayout *layout_horizontaln1 = new QHBoxLayout();
+		layout_horizontaln1->addWidget(label1);
+		layout_horizontaln1->addSpacing(5);
+		layout_horizontaln1->addWidget(labeln1);
+		layout_vertical1->addLayout(layout_horizontaln1);
 		layout_vertical1->addWidget(slider1);
-		layout_vertical1->addWidget(label2);
+		QHBoxLayout *layout_horizontaln2 = new QHBoxLayout();
+		layout_horizontaln2->addWidget(label2);
+		layout_horizontaln2->addSpacing(5);
+		layout_horizontaln2->addWidget(labeln2);
+		layout_vertical1->addLayout(layout_horizontaln2);
 		layout_vertical1->addWidget(slider2);
-		layout_vertical1->addSpacing(500);
+		layout_vertical1->addSpacing(300);
 		layout_vertical1->addWidget(button2);
+		layout_vertical1->addSpacing(300);
 		layout_horizontal->addLayout(layout_vertical1);
+
 		QVBoxLayout *layout_vertical2 = new QVBoxLayout();
 		layout_vertical2->addWidget(label7);
 		layout_vertical2->addWidget(viewport1);
@@ -208,11 +225,11 @@ public:
 		compositeOpacity->AddPoint(0.0, 0.0);
 		compositeOpacity->AddPoint(50.0, 1.0);
 		compositeOpacity->AddPoint(50.1, 0.0);
-		compositeOpacity->AddPoint(255.0, 0.0);
+		compositeOpacity->AddPoint(255.0, 0);
 		volumeProperty->SetScalarOpacity(compositeOpacity); // composite first
 		vtkSmartPointer<vtkColorTransferFunction> color = vtkSmartPointer<vtkColorTransferFunction>::New();
 		color->AddRGBPoint(0.0, 0.0, 0.0, 0.0);
-		color->AddRGBPoint(150.0, 0.750, 0.750, 0.750);
+		color->AddRGBPoint(150.0, 0.4, 0.4, 0.4);
 		color->AddRGBPoint(255.0, 1.0, 1.0, 1.0);
 		volumeProperty->SetColor(color);
 		vtkSmartPointer<vtkVolume> volume = vtkSmartPointer<vtkVolume>::New();
@@ -297,11 +314,13 @@ public:
 		{
 			viewer2->SetSlice(value);
 			viewer2->Render();
+			labeln1->setText(QString::number(value));
 		}
 		if (viewer3 != NULL)
 		{
 			viewer3->SetSlice(value);
 			viewer3->Render();
+			labeln1->setText(QString::number(value));
 		}
 	}
 	void slider_changed2(int value)
@@ -310,11 +329,13 @@ public:
 		{
 			viewer6->SetSlice(value);
 			viewer6->Render();
+			labeln2->setText(QString::number(value));
 		}
 		if (viewer7 != NULL)
 		{
 			viewer7->SetSlice(value);
 			viewer7->Render();
+			labeln2->setText(QString::number(value));
 		}
 	}
 
