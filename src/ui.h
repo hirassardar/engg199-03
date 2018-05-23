@@ -41,7 +41,7 @@
 #include <QLabel.h>
 #include <QString.h>
 #include <QVTKWidget.h>
-
+#include <QComboBox.h>
 class ui : public QMainWindow
 {
 	Q_OBJECT
@@ -77,8 +77,13 @@ public:
 	QLabel *label10;
 	QLabel *labeln1;
 	QLabel *labeln2;
+	QLabel *seg1;
 	char *filename_final;
 	char *filename_final1;
+	QComboBox *comboBox;
+	QComboBox *comboBox1;
+	double m;
+	unsigned int i;
 	ui()
 	{
 		// Resize the window
@@ -121,6 +126,7 @@ public:
 		label10 = new QLabel();
 		labeln1 = new QLabel();
 		labeln2 = new QLabel();
+		seg1 = new QLabel();
 		label1->setText("T1 Slice #");
 		label2->setText("T2 Slice #");
 		label3->setText("T1");
@@ -133,7 +139,17 @@ public:
 		label10->setText("T2 Segmented - Confidence connected");
 		labeln1->setText(" ");
 		labeln2->setText(" ");
-
+		seg1->setText("Confidence Connected Segmentation Parameters");
+		comboBox = new QComboBox();
+		comboBox->addItem(tr("Multiplier = 1"));
+    	comboBox->addItem(tr("Multiplier = 2"));
+    	comboBox->addItem(tr("Multiplier = 3"));
+		comboBox1 = new QComboBox();
+		comboBox1->addItem(tr("Iterations = 1"));
+		comboBox1->addItem(tr("Iterations = 10"));
+		comboBox1->addItem(tr("Iterations = 25"));
+		comboBox1->addItem(tr("Iterations = 50"));
+		comboBox1->addItem(tr("Iterations = 100"));
 		// Layout the widgets
 		QHBoxLayout *layout_horizontal = new QHBoxLayout();
 		widget->setLayout(layout_horizontal);
@@ -142,19 +158,22 @@ public:
 		layout_vertical1->addWidget(button1);
 		QHBoxLayout *layout_horizontaln1 = new QHBoxLayout();
 		layout_horizontaln1->addWidget(label1);
-		layout_horizontaln1->addSpacing(5);
+		layout_horizontaln1->addSpacing(1);
 		layout_horizontaln1->addWidget(labeln1);
 		layout_vertical1->addLayout(layout_horizontaln1);
 		layout_vertical1->addWidget(slider1);
 		QHBoxLayout *layout_horizontaln2 = new QHBoxLayout();
 		layout_horizontaln2->addWidget(label2);
-		layout_horizontaln2->addSpacing(5);
+		layout_horizontaln2->addSpacing(1);
 		layout_horizontaln2->addWidget(labeln2);
 		layout_vertical1->addLayout(layout_horizontaln2);
 		layout_vertical1->addWidget(slider2);
 		layout_vertical1->addSpacing(300);
 		layout_vertical1->addWidget(button2);
-		layout_vertical1->addSpacing(300);
+		layout_vertical1->addWidget(seg1);
+		layout_vertical1->addWidget(comboBox);
+		layout_vertical1->addWidget(comboBox1);
+		layout_vertical1->addSpacing(200);
 		layout_horizontal->addLayout(layout_vertical1);
 
 		QVBoxLayout *layout_vertical2 = new QVBoxLayout();
@@ -187,7 +206,8 @@ public:
 		connect(button2, SIGNAL(released()), this, SLOT(seg()));
 		connect(slider1, SIGNAL(valueChanged(int)), this, SLOT(slider_changed1(int)));
 		connect(slider2, SIGNAL(valueChanged(int)), this, SLOT(slider_changed2(int)));
-
+		connect(comboBox, SIGNAL(activated(int)), this, SLOT(multiplier(int)));
+		connect(comboBox1, SIGNAL(activated(int)), this, SLOT(niter(int)));
 		// Display the window
 		this->show();
 	}
@@ -198,7 +218,7 @@ public:
 		// Opening T1 image 
 		vtkSmartPointer<vtkMetaImageReader> reader = vtkSmartPointer<vtkMetaImageReader>::New();
 		QString fileName = QFileDialog::getOpenFileName(this, tr("Please select T1 Meta Image"), 
-			"C:/engg199-03/data/", tr("Images (*.mha)"));
+			"C:/engg199-03/project/data/", tr("Images (*.mha)"));
 		std::string filename = fileName.toUtf8().constData();
 		char *temp = new char[filename.size() + 1];
 		strcpy(temp, filename.c_str());
@@ -245,27 +265,17 @@ public:
 		volumeMapper->SetRequestedRenderModeToRayCast();
 		viewport1->GetRenderWindow()->Render();
 
-		/*vtkSmartPointer<vtkExtractVOI> extractVOI = vtkSmartPointer<vtkExtractVOI>::New();
-		extractVOI->SetInputConnection(reader->GetOutputPort());
-		extractVOI->SetVOI(0, reader->GetWidth()+1, 0, reader->GetHeight()+1, 0, 0);
-		extractVOI->Update();
-		vtkImageData* extracted = extractVOI->GetOutput();
-		ren1->AddViewProp(volume);
-		ren1->ResetCamera();
-		viewport1->GetRenderWindow()->Render();
-		volumeMapper->SetRequestedRenderModeToRayCast();
-		viewport1->GetRenderWindow()->Render();*/
 	}
 	void seg()
 	{
-		// save current image slice
+		//Save current image slice
 		vtkSmartPointer<vtkPNGWriter> pngwriter = vtkSmartPointer<vtkPNGWriter>::New();
-		pngwriter->SetFileName("C:/engg199-03/data/slice_to_segment.png");
+		pngwriter->SetFileName("C:/engg199-03/project/data/slice_to_segment.png");
 		pngwriter->SetInputData(viewer2->GetImageActor()->GetInput());
 		pngwriter->Write();
-
+		//kmeans segmentation
 		itk::ImageFileReader<itk::Image<unsigned char, 2>>::Pointer itkreader = itk::ImageFileReader<itk::Image<unsigned char, 2>>::New();
-		itkreader->SetFileName("C:/engg199-03/data/slice_to_segment.png");
+		itkreader->SetFileName("C:/engg199-03/project/data/slice_to_segment.png");
 		itk::ScalarImageKmeansImageFilter<itk::Image<unsigned char, 2>>::Pointer kmeans = itk::ScalarImageKmeansImageFilter<itk::Image<unsigned char, 2>>::New();
 		kmeans->SetInput(itkreader->GetOutput());
 		kmeans->AddClassWithInitialMean(5);
@@ -273,12 +283,12 @@ public:
 		kmeans->AddClassWithInitialMean(250);
 		kmeans->Update();
 		itk::ImageFileWriter<itk::Image<unsigned char, 2>>::Pointer writer = itk::ImageFileWriter<itk::Image<unsigned char, 2>>::New();
-		writer->SetFileName("C:/engg199-03/data/segimage1-kmeans.png");
+		writer->SetFileName("C:/engg199-03/project/data/segimage1-kmeans.png");
 		writer->SetInput(kmeans->GetOutput());
 		writer->Update();
-
+		//view kmeans segmented image
 		vtkSmartPointer<vtkPNGReader> reader = vtkSmartPointer<vtkPNGReader>::New();
-		reader->SetFileName("C:/engg199-03/data/segimage1-kmeans.png");
+		reader->SetFileName("C:/engg199-03/project/data/segimage1-kmeans.png");
 		reader->Update();
 		viewer3 = vtkSmartPointer<vtkImageViewer2>::New();
 		viewer3->SetInputConnection(reader->GetOutputPort());
@@ -286,29 +296,29 @@ public:
 		viewer3->GetWindowLevel()->SetLevel(1);
 		viewer3->GetWindowLevel()->SetWindow(2);
 		viewer3->Render();
-		//slider1->setRange(viewer3->GetSliceMin(), viewer3->GetSliceMax());
-
+		// confidence connected segmentation
+		m = 1;
+		i = 1;
 		itk::ImageFileReader<itk::Image< unsigned char, 2 >>::Pointer itkreader1 = itk::ImageFileReader<itk::Image< unsigned char, 2 >>::New();
-		itkreader1->SetFileName("C:/engg199-03/data/slice_to_segment.png");
+		itkreader1->SetFileName("C:/engg199-03/project/data/slice_to_segment.png");
 		itkreader1->Update();
 		itk::ConfidenceConnectedImageFilter<itk::Image<unsigned char, 2>, itk::Image<unsigned char, 2>>::Pointer confidenceConnectedFilter = itk::ConfidenceConnectedImageFilter<itk::Image<unsigned char, 2>, itk::Image<unsigned char, 2>>::New();
 		confidenceConnectedFilter->SetInitialNeighborhoodRadius(10);
-		confidenceConnectedFilter->SetMultiplier(1.8);
-		confidenceConnectedFilter->SetNumberOfIterations(32);
+		confidenceConnectedFilter->SetMultiplier(m);
+		confidenceConnectedFilter->SetNumberOfIterations(i);
 		confidenceConnectedFilter->SetReplaceValue(255);
 		itk::Image< unsigned char, 2 >::IndexType seed;
 		seed[0] = 300;
 		seed[1] = 150;
 		confidenceConnectedFilter->SetSeed(seed);
 		confidenceConnectedFilter->SetInput(itkreader1->GetOutput());
-
 		itk::ImageFileWriter<itk::Image<unsigned char, 2>>::Pointer writer1 = itk::ImageFileWriter<itk::Image<unsigned char, 2>>::New();
-		writer1->SetFileName("C:/engg199-03/data/segimage1-cc.png");
+		writer1->SetFileName("C:/engg199-03/project/data/segimage1-cc.png");
 		writer1->SetInput(confidenceConnectedFilter->GetOutput());
 		writer1->Update();
-
+		// view confidence connected segmentation
 		vtkSmartPointer<vtkPNGReader> reader1 = vtkSmartPointer<vtkPNGReader>::New();
-		reader1->SetFileName("C:/engg199-03/data/segimage1-cc.png");
+		reader1->SetFileName("C:/engg199-03/project/data/segimage1-cc.png");
 		reader1->Update();
 		viewer4 = vtkSmartPointer<vtkImageViewer2>::New();
 		viewer4->SetInputConnection(reader1->GetOutputPort());
@@ -326,12 +336,6 @@ public:
 			viewer2->Render();
 			labeln1->setText(QString::number(value));
 		}
-		if (viewer3 != NULL)
-		{
-			viewer3->SetSlice(value);
-			viewer3->Render();
-			labeln1->setText(QString::number(value));
-		}
 	}
 	void slider_changed2(int value)
 	{
@@ -341,12 +345,12 @@ public:
 			viewer6->Render();
 			labeln2->setText(QString::number(value));
 		}
-		if (viewer7 != NULL)
-		{
-			viewer7->SetSlice(value);
-			viewer7->Render();
-			labeln2->setText(QString::number(value));
-		}
+	}
+	void multiplier(int value)
+	{
+		if (value == 1) { m = 1; }
+		if (value == 2) { m = 1.8; }
+		if (value == 3) { m = 3; }
 	}
 
 };
